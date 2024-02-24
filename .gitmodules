@@ -1,0 +1,6 @@
+[submodule "spotmusic-backend"]
+	path = spotmusic-backend
+	url = git@github.com:thirochas/spotmusic-backend.git
+[submodule "spotmusic-frontend"]
+	path = spotmusic-frontend
+	url = git@github.com:thirochas/spotmusic-frontend.git
