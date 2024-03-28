@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  api-manager:
+    build: 
+      context: ./spotmusic-backend/api-manager
+    container_name: api-manager
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s go run cmd/main.go
+    ports:
+      - "5001:5001"
+    networks:
+      - spotmusic-network
+
+  api-player:
+    build: 
+      context: ./spotmusic-backend/api-player
+    container_name: api-player
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s go run cmd/main.go
+    ports:
+      - "5002:5002"
+    networks:
+      - spotmusic-network
+    depends_on:
+      - db
+
+  web-plataform:
+    build: 
+      context: ./spotmusic-frontend/web-plataform
+    container_name: web-plataform
+    ports:
+      - "3000:3000"
+    networks: 
+      - spotmusic-network
+    depends_on: 
+       - api-manager
+       - api-player
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    volumes: 
+      - ./mysql:/var/lib/mysql
+    environment: 
+      - MYSQL_DATABASE=spotmusic_db
+      - MYSQL_ROOT_PASSWORD=root
+    networks: 
+      - spotmusic-network
+
+networks: 
+  spotmusic-network:
+    driver: bridge      
